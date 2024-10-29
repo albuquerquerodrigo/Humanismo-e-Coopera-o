@@ -14,9 +14,10 @@ body, html {
 }
 
 body {
-    background-image: url('caminho_da_sua_imagem.jpg'); 
+    background-image: url('background.png'); 
     background-size: cover;
-    background-position: center;
+    background-repeat: no-repeat;
+    background-position: center center;
     display: flex;
     align-items: center;
     justify-content: center;
