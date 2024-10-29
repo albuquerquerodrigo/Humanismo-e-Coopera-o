@@ -9,18 +9,29 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: Arial, sans-serif;
+    font-family: 'Press Start 2P', sans-serif;
     color: #fff;
 }
 
 body {
     background-image: url('background.png'); 
-    background-size: cover;
+    background-size: 60%;
     background-repeat: no-repeat;
     background-position: center center;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.config {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.config img {
+    width: 55px; 
+    cursor: pointer;
 }
 
 .container {
@@ -31,7 +42,13 @@ body {
 .title {
     font-size: 3rem;
     margin: 1.5rem 0;
-    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 45px;
+    margin-top: 180px;
+    margin-bottom: 150px;
+    zoom: 75%;
 }
 
 .button {
@@ -44,13 +61,25 @@ body {
     cursor: pointer;
     transition: background-color 0.3s;
     display: block; 
-    margin: 0.5rem auto; 
     width: 80%; 
     max-width: 400px; 
+    margin-top: 160px;
 }
 
 .button:hover {
     background-color: #F2E1A3;
+}
+
+.button p {
+    font-family: 'Press Start 2P', sans-serif ;
+    font-weight: bold;
+    font-size: 22px;
+    background: linear-gradient(180deg, rgba(251,178,38,1) 26%, rgba(199,47,30,1) 93%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    
 }
 
 .largo-btn {
