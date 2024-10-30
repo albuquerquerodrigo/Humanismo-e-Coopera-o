@@ -14,7 +14,7 @@ body, html {
 }
 
 body {
-    background-image: url('back6.jpeg'); 
+    background-image: url('back7.jpeg'); 
     background-size: 105%;
     background-repeat: no-repeat;
     background-position: center center;
@@ -45,7 +45,8 @@ body {
     align-items: center;
     justify-content: center;
     margin-right: 45px;
-    margin-top: 160px;
+    margin-top: 270px;
+    margin-bottom: 120px;
     zoom: 60%;
 }
 
@@ -80,7 +81,7 @@ body {
 }
 
 .largo-btn {
-    width: 80%; 
+    width: 100%; 
     max-width: 300px; 
     margin: 1rem auto;
     
