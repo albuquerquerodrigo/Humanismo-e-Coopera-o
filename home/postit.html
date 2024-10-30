@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Its Interativos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-image: url('https://img.freepik.com/fotos-gratis/pano-de-fundo-texturizado-de-papel-de-parede-pintado-de-preto_53876-129499.jpg?semt=ais_hybrid'); /* Substitua pela URL da sua imagem de fundo */
+            background-size: cover;
+            color: #FFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            max-width: 100vw;
+            overflow-y: auto;
+            padding: 20px;
+            justify-content: center;
+        }
+
+        .post-it {
+            width: 150px;
+            height: 150px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .post-it:hover {
+            transform: scale(1.05);
+        }
+
+        .post-it p {
+            margin: 0;
+        }
+
+        .new-post-it-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            transition: background-color 0.3s, transform 0.5s ease;
+        }
+
+        .new-post-it-btn:hover {
+            background-color: #45a049;
+        }
+
+        .new-post-it-btn:active {
+            transform: scale(1.1);
+        }
+
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            width: 80vw;
+            height: auto;
+            color: #333;
+            overflow-y: auto;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .edit-modal label {
+            font-size: 12px;
+            margin: 8px 0;
+            display: block;
+        }
+
+        .edit-modal input, .edit-modal textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .edit-modal .color-select {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            justify-content: center;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .color-option.selected::before {
+            content: '✔';
+            font-size: 20px;
+            color: white;
+            position: absolute;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .save-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            transition: background-color 0.3s, transform 0.5s ease;
+        }
+
+        .save-btn:hover {
+            background-color: #45a049;
+        }
+
+        .save-btn:active {
+            transform: scale(1.1);
+        }
+
+        .room-select {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2196F3;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .room-list {
+            margin-top: 5px;
+            width: 120px;
+            padding: 5px;
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            background-color: #2196F3;
+            border: none;
+            color: white;
+        }
+
+        .add-room-btn {
+            background-color: #4caf50;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            margin-top: 5px;
+            font-family: 'Press Start 2P', cursive;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Post-Its Interativos</h1>
+
+    <div class="container" id="postItContainer"></div>
+
+    <button class="new-post-it-btn" onclick="openEditModal()">Novo Post-It</button>
+
+    <div class="edit-modal" id="editModal">
+        <h3>Editar Post-It</h3>
+        <label>Nome:</label>
+        <input type="text" id="nameInput" placeholder="Nome">
+        <label>Turma:</label>
+        <input type="text" id="classInput" placeholder="Turma">
+        <label>Turno:</label>
+        <input type="text" id="shiftInput" placeholder="Turno">
+        <label>Conteúdo:</label>
+        <textarea id="textContent" rows="4" placeholder="Conteúdo"></textarea>
+        <div class="color-select">
+            <div class="color-option" style="background-color: #ffeb3b;" onclick="selectColor(this, '#ffeb3b')"></div>
+            <div class="color-option" style="background-color: #f48fb1;" onclick="selectColor(this, '#f48fb1')"></div>
+            <div class="color-option" style="background-color: #81d4fa;" onclick="selectColor(this, '#81d4fa')"></div>
+            <div class="color-option" style="background-color: #c8e6c9;" onclick="selectColor(this, '#c8e6c9')"></div>
+        </div>
+        <button class="save-btn" onclick="savePostIt()">Salvar</button>
+    </div>
+
+    <div class="room-select">
+        <select id="roomList" class="room-list" onchange="changeRoom()">
+            <option value="Sala 1">Sala 1</option>
+            <option value="Sala 2">Sala 2</option>
+        </select>
+        <button class="add-room-btn" onclick="addRoom()">+ Nova Sala</button>
+    </div>
+
+    <script>
+        let currentRoom = 'Sala 1';
+        let postIts = {};
+        let editingPostIt = null;
+        let selectedColor = '#ffeb3b';
+
+        function changeRoom() {
+            currentRoom = document.getElementById('roomList').value;
+            loadPostIts();
+        }
+
+        function addRoom() {
+            const newRoom = prompt("Nome da nova sala:");
+            if (newRoom) {
+                const roomList = document.getElementById('roomList');
+                const option = document.createElement('option');
+                option.value = newRoom;
+                option.textContent = newRoom;
+                roomList.appendChild(option);
+                roomList.value = newRoom;
+                changeRoom();
+            }
+        }
+
+        function openEditModal(postIt = null) {
+            editingPostIt = postIt;
+
+            document.getElementById('nameInput').value = postIt ? postIt.dataset.name : '';
+            document.getElementById('classInput').value = postIt ? postIt.dataset.class : '';
+            document.getElementById('shiftInput').value = postIt ? postIt.dataset.shift : '';
+            document.getElementById('textContent').value = postIt ? postIt.dataset.content : '';
+
+            selectedColor = postIt ? postIt.style.backgroundColor : '#ffeb3b';
+            document.getElementById('editModal').style.backgroundColor = selectedColor;
+
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function selectColor(element, color) {
+            selectedColor = color;
+            document.getElementById('editModal').style.backgroundColor = color;
+            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function savePostIt() {
+            const name = document.getElementById('nameInput').value;
+            const turma = document.getElementById('classInput').value;
+            const turno = document.getElementById('shiftInput').value;
+            const content = document.getElementById('textContent').value;
+
+            if (editingPostIt) {
+                editingPostIt.dataset.name = name;
+                editingPostIt.dataset.class = turma;
+                editingPostIt.dataset.shift = turno;
+                editingPostIt.dataset.content = content;
+                editingPostIt.style.backgroundColor = selectedColor;
+                editingPostIt.querySelector('p').textContent = content;
+            } else {
+                const newPostIt = { name, turma, turno, content, color: selectedColor };
+                postIts[currentRoom] = postIts[currentRoom] || [];
+                postIts[currentRoom].push(newPostIt);
+            }
+            closeEditModal();
+            loadPostIts();
+        }
+
+        function loadPostIts() {
+            const container = document.getElementById('postItContainer');
+            container.innerHTML = '';
+            if (postIts[currentRoom]) {
+                postIts[currentRoom].forEach(postIt => {
+                    const postItElement = document.createElement('div');
+                    postItElement.classList.add('post-it');
+                    postItElement.style.backgroundColor = postIt.color;
+                    postItElement.dataset.name = postIt.name;
+                    postItElement.dataset.class = postIt.turma;
+                    postItElement.dataset.shift = postIt.turno;
+                    postItElement.dataset.content = postIt.content;
+                    postItElement.innerHTML = `<p>${postIt.content}</p>`;
+                    postItElement.onclick = () => openEditModal(postItElement);
+                    container.appendChild(postItElement);
+                });
+            }
+        }
+
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('.edit-modal') && !event.target.closest('.post-it') && !event.target.closest('.new-post-it-btn')) {
+                closeEditModal();
+            }
+        });
+
+        loadPostIts();
+    </script>
+</body>
+</html>
