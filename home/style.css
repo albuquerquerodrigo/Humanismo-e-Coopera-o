@@ -14,8 +14,8 @@ body, html {
 }
 
 body {
-    background-image: url('background.png'); 
-    background-size: 60%;
+    background-image: url('back6.jpeg'); 
+    background-size: 105%;
     background-repeat: no-repeat;
     background-position: center center;
     display: flex;
@@ -40,15 +40,13 @@ body {
 }
 
 .title {
-    font-size: 3rem;
     margin: 1.5rem 0;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 45px;
-    margin-top: 180px;
-    margin-bottom: 150px;
-    zoom: 75%;
+    margin-top: 160px;
+    zoom: 60%;
 }
 
 .button {
@@ -57,13 +55,12 @@ body {
     color: #fff;
     background-color: #F9EA8A;
     border: none;
-    border-radius: 30px;
+    border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s;
     display: block; 
     width: 80%; 
     max-width: 400px; 
-    margin-top: 160px;
 }
 
 .button:hover {
@@ -86,4 +83,5 @@ body {
     width: 80%; 
     max-width: 300px; 
     margin: 1rem auto;
+    
 }
