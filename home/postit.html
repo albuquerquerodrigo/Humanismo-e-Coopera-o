@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Press Start 2P', cursive;
-            background-image: url('https://img.freepik.com/fotos-gratis/pano-de-fundo-texturizado-de-papel-de-parede-pintado-de-preto_53876-129499.jpg?semt=ais_hybrid'); /* Substitua pela URL da sua imagem de fundo */
+            background-image: url('https://img.freepik.com/fotos-gratis/pano-de-fundo-texturizado-de-papel-de-parede-pintado-de-preto_53876-129499.jpg?semt=ais_hybrid');
             background-size: cover;
             color: #FFF;
             display: flex;
@@ -271,7 +271,9 @@
             document.getElementById('textContent').value = postIt ? postIt.dataset.content : '';
 
             selectedColor = postIt ? postIt.style.backgroundColor : '#ffeb3b';
-            document.getElementById('editModal').style.backgroundColor = selectedColor;
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.toggle('selected', option.style.backgroundColor === selectedColor);
+            });
 
             document.getElementById('editModal').style.display = 'block';
         }
@@ -281,60 +283,89 @@
         }
 
         function selectColor(element, color) {
-            selectedColor = color;
-            document.getElementById('editModal').style.backgroundColor = color;
-            document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.color-option').forEach(option => option.classList.remove('selected'));
             element.classList.add('selected');
+            selectedColor = color;
         }
 
         function savePostIt() {
             const name = document.getElementById('nameInput').value;
-            const turma = document.getElementById('classInput').value;
-            const turno = document.getElementById('shiftInput').value;
+            const className = document.getElementById('classInput').value;
+            const shift = document.getElementById('shiftInput').value;
             const content = document.getElementById('textContent').value;
 
             if (editingPostIt) {
                 editingPostIt.dataset.name = name;
-                editingPostIt.dataset.class = turma;
-                editingPostIt.dataset.shift = turno;
+                editingPostIt.dataset.class = className;
+                editingPostIt.dataset.shift = shift;
                 editingPostIt.dataset.content = content;
                 editingPostIt.style.backgroundColor = selectedColor;
                 editingPostIt.querySelector('p').textContent = content;
             } else {
-                const newPostIt = { name, turma, turno, content, color: selectedColor };
-                postIts[currentRoom] = postIts[currentRoom] || [];
-                postIts[currentRoom].push(newPostIt);
+                const postIt = document.createElement('div');
+                postIt.className = 'post-it';
+                postIt.dataset.name = name;
+                postIt.dataset.class = className;
+                postIt.dataset.shift = shift;
+                postIt.dataset.content = content;
+                postIt.style.backgroundColor = selectedColor;
+                postIt.innerHTML = `<p>${content}</p>`;
+                postIt.onclick = () => openEditModal(postIt);
+
+                if (!postIts[currentRoom]) {
+                    postIts[currentRoom] = [];
+                }
+                postIts[currentRoom].push(postIt);
+                document.getElementById('postItContainer').appendChild(postIt);
             }
+
             closeEditModal();
-            loadPostIts();
+            savePostItsToLocalStorage();
         }
 
         function loadPostIts() {
-            const container = document.getElementById('postItContainer');
-            container.innerHTML = '';
+            document.getElementById('postItContainer').innerHTML = '';
             if (postIts[currentRoom]) {
-                postIts[currentRoom].forEach(postIt => {
-                    const postItElement = document.createElement('div');
-                    postItElement.classList.add('post-it');
-                    postItElement.style.backgroundColor = postIt.color;
-                    postItElement.dataset.name = postIt.name;
-                    postItElement.dataset.class = postIt.turma;
-                    postItElement.dataset.shift = postIt.turno;
-                    postItElement.dataset.content = postIt.content;
-                    postItElement.innerHTML = `<p>${postIt.content}</p>`;
-                    postItElement.onclick = () => openEditModal(postItElement);
-                    container.appendChild(postItElement);
-                });
+                postIts[currentRoom].forEach(postIt => document.getElementById('postItContainer').appendChild(postIt));
             }
         }
 
-        document.addEventListener('click', (event) => {
-            if (!event.target.closest('.edit-modal') && !event.target.closest('.post-it') && !event.target.closest('.new-post-it-btn')) {
-                closeEditModal();
-            }
-        });
+        function savePostItsToLocalStorage() {
+            const postItsData = Object.fromEntries(Object.entries(postIts).map(([room, postItsArray]) => [
+                room,
+                postItsArray.map(postIt => ({
+                    name: postIt.dataset.name,
+                    class: postIt.dataset.class,
+                    shift: postIt.dataset.shift,
+                    content: postIt.dataset.content,
+                    color: postIt.style.backgroundColor
+                }))
+            ]));
+            localStorage.setItem('postItsData', JSON.stringify(postItsData));
+        }
 
-        loadPostIts();
+        function loadPostItsFromLocalStorage() {
+            const savedPostIts = JSON.parse(localStorage.getItem('postItsData'));
+            if (savedPostIts) {
+                for (const [room, postItsArray] of Object.entries(savedPostIts)) {
+                    postIts[room] = postItsArray.map(data => {
+                        const postIt = document.createElement('div');
+                        postIt.className = 'post-it';
+                        postIt.dataset.name = data.name;
+                        postIt.dataset.class = data.class;
+                        postIt.dataset.shift = data.shift;
+                        postIt.dataset.content = data.content;
+                        postIt.style.backgroundColor = data.color;
+                        postIt.innerHTML = `<p>${data.content}</p>`;
+                        postIt.onclick = () => openEditModal(postIt);
+                        return postIt;
+                    });
+                }
+                loadPostIts();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPostItsFromLocalStorage);
     </script>
 </body>
 </html>
