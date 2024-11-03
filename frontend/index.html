@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Its Interativos</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link para o CSS -->
+</head>
+<body>
+    <h1>Post-Its Interativos</h1>
+
+    <div class="container" id="postItContainer"></div>
+
+    <button class="new-post-it-btn" onclick="openEditModal()">Novo Post-It</button>
+
+    <div class="edit-modal" id="editModal">
+        <h3>Editar Post-It</h3>
+        <label>Nome:</label>
+        <input type="text" id="nameInput" placeholder="Nome">
+        <label>Turma:</label>
+        <input type="text" id="classInput" placeholder="Turma">
+        <label>Turno:</label>
+        <input type="text" id="shiftInput" placeholder="Turno">
+        <label>Conteúdo:</label>
+        <textarea id="textContent" rows="4" placeholder="Conteúdo"></textarea>
+        <div class="color-select">
+            <div class="color-option" style="background-color: #ffeb3b;" onclick="selectColor(this, '#ffeb3b')"></div>
+            <div class="color-option" style="background-color: #f48fb1;" onclick="selectColor(this, '#f48fb1')"></div>
+            <div class="color-option" style="background-color: #81d4fa;" onclick="selectColor(this, '#81d4fa')"></div>
+            <div class="color-option" style="background-color: #c8e6c9;" onclick="selectColor(this, '#c8e6c9')"></div>
+        </div>
+        <button class="save-btn" onclick="savePostIt()">Salvar</button>
+        <button class="delete-btn" onclick="deletePostIt()">Excluir</button>
+    </div>
+
+    <div class="room-select">
+        <select id="roomList" class="room-list" onchange="changeRoom()">
+            <option value="Sala 1">Sala 1</option>
+            <option value="Sala 2">Sala 2</option>
+        </select>
+        <button class="add-room-btn" onclick="addRoom()">+ Nova Sala</button>
+    </div>
+
+    <script src="script.js"></script> <!-- Link para o JavaScript -->
+</body>
+</html>
