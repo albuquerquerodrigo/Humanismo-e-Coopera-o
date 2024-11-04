@@ -3,9 +3,33 @@ let selectedColor = 'yellow';
 let currentRoom = 'Sala1';
 const postIts = {};
 
-document.addEventListener('DOMContentLoaded', () => {
-    addRoom(currentRoom);
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadRooms();
+    await loadPostIts();
 });
+
+async function loadRooms() {
+    const roomSelect = document.getElementById('roomSelect');
+    roomSelect.innerHTML = '';
+
+    try {
+        const response = await fetch('http://localhost:3001/api/rooms');
+        const rooms = await response.json();
+
+        rooms.forEach(room => {
+            const option = document.createElement('option');
+            option.value = room;
+            option.textContent = room;
+            roomSelect.appendChild(option);
+        });
+
+        currentRoom = localStorage.getItem('currentRoom') || rooms[0] || 'Sala1';
+        roomSelect.value = currentRoom;
+        localStorage.setItem('currentRoom', currentRoom);
+    } catch (error) {
+        console.error('Erro ao carregar salas:', error);
+    }
+}
 
 async function loadPostIts() {
     try {
@@ -131,30 +155,43 @@ async function deletePostIt() {
     closeEditModal();
 }
 
-function addRoom(room = null) {
+async function addRoom(room = null) {
     const newRoom = room || prompt('Digite o nome da nova sala:');
-    if (newRoom && !postIts[newRoom]) {
-        postIts[newRoom] = [];
-        const option = document.createElement('option');
-        option.value = newRoom;
-        option.textContent = newRoom;
-        document.getElementById('roomSelect').appendChild(option);
-        document.getElementById('roomSelect').value = newRoom;
-        currentRoom = newRoom;
-        loadPostIts();
+    if (!newRoom) return;
+
+    try {
+        await fetch('http://localhost:3001/api/rooms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room: newRoom }),
+        });
+        await loadRooms();
+        changeRoom(newRoom); 
+    } catch (error) {
+        console.error('Erro ao adicionar sala:', error);
     }
 }
 
-function changeRoom() {
-    currentRoom = document.getElementById('roomSelect').value;
+function changeRoom(roomName) {
+    currentRoom = roomName || document.getElementById('roomSelect').value;
+    localStorage.setItem('currentRoom', currentRoom);
     loadPostIts();
 }
 
-function deleteRoom() {
+async function deleteRoom() {
     if (confirm(`Deseja realmente excluir a sala ${currentRoom}?`)) {
-        delete postIts[currentRoom];
-        document.querySelector(`#roomSelect option[value="${currentRoom}"]`).remove();
-        currentRoom = document.getElementById('roomSelect').value;
-        loadPostIts();
+        try {
+            await fetch(`http://localhost:3001/api/rooms/${currentRoom}`, {
+                method: 'DELETE',
+            });
+            await loadRooms(); 
+            const roomSelect = document.getElementById('roomSelect');
+            currentRoom = roomSelect.options[0] ? roomSelect.options[0].value : 'Sala1';
+            roomSelect.value = currentRoom;
+            localStorage.setItem('currentRoom', currentRoom);
+            loadPostIts();
+        } catch (error) {
+            console.error('Erro ao excluir sala:', error);
+        }
     }
 }
