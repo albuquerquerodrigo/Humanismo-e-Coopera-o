@@ -1,103 +1,160 @@
-let currentRoom = 'Sala 1';
-let postIts = {};
 let editingPostIt = null;
-let selectedColor = '#ffeb3b';
+let selectedColor = 'yellow';
+let currentRoom = 'Sala1';
+const postIts = {};
 
-function changeRoom() {
-    currentRoom = document.getElementById('roomList').value;
-    loadPostIts();
-}
+document.addEventListener('DOMContentLoaded', () => {
+    addRoom(currentRoom);
+});
 
-function addRoom() {
-    const newRoom = prompt("Nome da nova sala:");
-    if (newRoom) {
-        const roomList = document.getElementById('roomList');
-        const newOption = document.createElement('option');
-        newOption.value = newRoom;
-        newOption.textContent = newRoom;
-        roomList.appendChild(newOption);
+async function loadPostIts() {
+    try {
+        const response = await fetch(`http://localhost:3001/api/postIts?room=${currentRoom}`);
+        const postIts = await response.json();
+
+        document.getElementById('postItContainer').innerHTML = '';
+        postIts.forEach(data => {
+            const postIt = createPostItElement(data.id, data);
+            document.getElementById('postItContainer').appendChild(postIt);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar Post-Its:', error);
     }
 }
 
-function loadPostIts() {
-    const container = document.getElementById('postItContainer');
-    container.innerHTML = '';
-    const roomPostIts = postIts[currentRoom] || [];
+function openEditModal(postIt = null) {
+    editingPostIt = postIt;
 
-    roomPostIts.forEach((postIt, index) => {
-        const postItElement = document.createElement('div');
-        postItElement.className = 'post-it';
-        postItElement.style.backgroundColor = postIt.color;
-        postItElement.innerHTML = `<p>${postIt.content}</p>`; // Apenas o conteúdo é exibido
-        postItElement.onclick = () => editPostIt(index);
-        container.appendChild(postItElement);
-    });
+    if (postIt) {
+        document.getElementById('nameInput').value = postIt.dataset.name;
+        document.getElementById('classInput').value = postIt.dataset.class;
+        document.getElementById('shiftInput').value = postIt.dataset.shift;
+        document.getElementById('textContent').value = postIt.dataset.content;
+        selectedColor = postIt.style.backgroundColor;
+    } else {
+        document.getElementById('nameInput').value = '';
+        document.getElementById('classInput').value = '';
+        document.getElementById('shiftInput').value = '';
+        document.getElementById('textContent').value = '';
+        selectedColor = 'yellow';
+    }
+
+    document.getElementById('editModal').style.display = 'block';
+    updateColorSelection();
 }
 
-function openEditModal() {
-    document.getElementById('editModal').style.display = 'block';
-    document.getElementById('nameInput').value = '';
-    document.getElementById('classInput').value = '';
-    document.getElementById('shiftInput').value = '';
-    document.getElementById('textContent').value = '';
-    selectedColor = '#ffeb3b';
-    document.querySelectorAll('.color-option').forEach(option => option.classList.remove('selected'));
-    document.querySelector('.color-option').classList.add('selected');
+function closeEditModal() {
     editingPostIt = null;
+    document.getElementById('editModal').style.display = 'none';
 }
 
-function editPostIt(index) {
-    const postIt = postIts[currentRoom][index];
-    document.getElementById('editModal').style.display = 'block';
-    document.getElementById('nameInput').value = postIt.name;
-    document.getElementById('classInput').value = postIt.class;
-    document.getElementById('shiftInput').value = postIt.shift;
-    document.getElementById('textContent').value = postIt.content;
-    selectedColor = postIt.color; // A cor de edição é a mesma do post-it
-    document.querySelectorAll('.color-option').forEach(option => option.classList.remove('selected'));
-    const selectedOption = [...document.querySelectorAll('.color-option')].find(option => option.style.backgroundColor === selectedColor);
-    if (selectedOption) selectedOption.classList.add('selected');
-    editingPostIt = index;
-}
-
-function savePostIt() {
+async function savePostIt() {
     const name = document.getElementById('nameInput').value;
-    const classInput = document.getElementById('classInput').value;
-    const shiftInput = document.getElementById('shiftInput').value;
+    const className = document.getElementById('classInput').value;
+    const shift = document.getElementById('shiftInput').value;
     const content = document.getElementById('textContent').value;
 
-    if (!name || !classInput || !shiftInput || !content) {
-        alert("Todos os campos devem ser preenchidos!");
-        return;
-    }
+    const postItData = {
+        name, class: className, shift, content, color: selectedColor, room: currentRoom
+    };
 
-    const postItData = { name, class: classInput, shift: shiftInput, content, color: selectedColor };
+    try {
+        if (editingPostIt) {
+            editingPostIt.dataset.name = name;
+            editingPostIt.dataset.class = className;
+            editingPostIt.dataset.shift = shift;
+            editingPostIt.dataset.content = content;
+            editingPostIt.style.backgroundColor = selectedColor;
+            editingPostIt.querySelector('p').textContent = content;
+        } else {
+            const response = await fetch('http://localhost:3001/api/postIts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(postItData),
+            });
 
-    if (editingPostIt !== null) {
-        postIts[currentRoom][editingPostIt] = postItData;
-    } else {
-        if (!postIts[currentRoom]) postIts[currentRoom] = [];
-        postIts[currentRoom].push(postItData);
+            if (response.ok) {
+                const newPostIt = await response.json();
+                const postItElement = createPostItElement(newPostIt.id, postItData);
+                document.getElementById('postItContainer').appendChild(postItElement);
+            } else {
+                console.error('Erro ao salvar Post-It:', response.statusText);
+            }
+        }
+    } catch (error) {
+        console.error('Erro:', error);
     }
 
     closeEditModal();
-    loadPostIts();
 }
 
-function selectColor(element, color) {
+function createPostItElement(id, data) {
+    const postIt = document.createElement('div');
+    postIt.className = 'post-it';
+    postIt.dataset.id = id;
+    postIt.dataset.name = data.name;
+    postIt.dataset.class = data.class;
+    postIt.dataset.shift = data.shift;
+    postIt.dataset.content = data.content;
+    postIt.style.backgroundColor = data.color;
+    postIt.innerHTML = `<p>${data.content}</p>`;
+    postIt.onclick = () => openEditModal(postIt);
+    return postIt;
+}
+
+function selectColor(color) {
     selectedColor = color;
-    document.querySelectorAll('.color-option').forEach(option => option.classList.remove('selected'));
-    element.classList.add('selected');
+    updateColorSelection();
 }
 
-function deletePostIt() {
-    if (editingPostIt !== null) {
-        postIts[currentRoom].splice(editingPostIt, 1);
-        closeEditModal();
+function updateColorSelection() {
+    document.querySelectorAll('.color-option').forEach(option => {
+        option.classList.toggle('selected', option.style.backgroundColor === selectedColor);
+    });
+}
+
+async function deletePostIt() {
+    if (!editingPostIt) return;
+
+    const postId = editingPostIt.dataset.id;
+    try {
+        const response = await fetch(`http://localhost:3001/api/postIts/${postId}`, { method: 'DELETE' });
+        if (response.ok) {
+            editingPostIt.remove();
+        } else {
+            console.error('Erro ao deletar o Post-It:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Erro ao deletar o Post-It:', error);
+    }
+
+    closeEditModal();
+}
+
+function addRoom(room = null) {
+    const newRoom = room || prompt('Digite o nome da nova sala:');
+    if (newRoom && !postIts[newRoom]) {
+        postIts[newRoom] = [];
+        const option = document.createElement('option');
+        option.value = newRoom;
+        option.textContent = newRoom;
+        document.getElementById('roomSelect').appendChild(option);
+        document.getElementById('roomSelect').value = newRoom;
+        currentRoom = newRoom;
         loadPostIts();
     }
 }
 
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
+function changeRoom() {
+    currentRoom = document.getElementById('roomSelect').value;
+    loadPostIts();
+}
+
+function deleteRoom() {
+    if (confirm(`Deseja realmente excluir a sala ${currentRoom}?`)) {
+        delete postIts[currentRoom];
+        document.querySelector(`#roomSelect option[value="${currentRoom}"]`).remove();
+        currentRoom = document.getElementById('roomSelect').value;
+        loadPostIts();
+    }
 }

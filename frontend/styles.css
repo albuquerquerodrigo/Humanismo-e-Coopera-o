@@ -206,7 +206,7 @@ body {
     color: white;
 }
 
-.add-room-btn {
+.add-room-btn, .delete-room-btn {
     background-color: #4caf50;
     color: white;
     padding: 5px;
@@ -214,4 +214,13 @@ body {
     margin-top: 5px;
     font-family: 'Press Start 2P', cursive;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.5s ease;
+}
+
+.add-room-btn:hover, .delete-room-btn:hover {
+    background-color: #45a049;
+}
+
+.add-room-btn:active, .delete-room-btn:active {
+    transform: scale(1.1);
 }
