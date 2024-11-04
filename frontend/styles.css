@@ -8,7 +8,7 @@
 
 body {
     font-family: 'Press Start 2P', cursive;
-    background-image: url('https://img.freepik.com/fotos-gratis/pano-de-fundo-texturizado-de-papel-de-parede-pintado-de-preto_53876-129499.jpg?semt=ais_hybrid');
+    background-image: url('paineiroxo.gif');    
     background-size: cover;
     color: #FFF;
     display: flex;
@@ -16,6 +16,7 @@ body {
     align-items: center;
     padding: 20px;
     overflow: hidden;
+
 }
 
 .container {
@@ -27,6 +28,7 @@ body {
     overflow-y: auto;
     padding: 20px;
     justify-content: center;
+
 }
 
 .post-it {
