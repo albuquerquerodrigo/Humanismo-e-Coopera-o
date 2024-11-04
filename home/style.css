@@ -14,8 +14,8 @@ body, html {
 }
 
 body {
-    background-image: url('back7.jpeg'); 
-    background-size: 105%;
+    background-image: url('fundohumanismo.gif'); 
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
     display: flex;
@@ -30,7 +30,7 @@ body {
 }
 
 .config img {
-    width: 55px; 
+    width: 85px; 
     cursor: pointer;
 }
 
@@ -40,21 +40,21 @@ body {
 }
 
 .title {
-    margin: 1.5rem 0;
+    zoom: 2;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-right: 45px;
-    margin-top: 270px;
-    margin-bottom: 120px;
-    zoom: 60%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+   
 }
 
 .button {
     padding: 1rem 3rem;
     font-size: 1.2rem;
     color: #fff;
-    background-color: #F9EA8A;
+    background-color: #f9eac0;
     border: none;
     border-radius: 25px;
     cursor: pointer;
@@ -65,15 +65,15 @@ body {
 }
 
 .button:hover {
-    background-color: #F2E1A3;
+    background-color: #dbacd9;
 }
 
 .button p {
     font-family: 'Press Start 2P', sans-serif ;
     font-weight: bold;
     font-size: 22px;
-    background: linear-gradient(180deg, rgba(251,178,38,1) 26%, rgba(199,47,30,1) 93%);
-    -webkit-background-clip: text;
+    background: rgb(63,94,251);
+background: linear-gradient(185deg, rgba(63,94,251,1) 0%, rgba(123,86,205,1) 37%, rgba(252,70,107,1) 100%);  -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
