@@ -1,35 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Versão de Aluno - Post-its Interativos</title>
+    <title>Post-Its Interativos - Aluno</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Post-its Interativos - Versão Aluno</h1>
     
-    <div>
-        <label for="roomSelect">Escolha a sala:</label>
-        <select id="roomSelect" onchange="changeRoom()"></select>
-    </div>
-    
-    <div id="postItContainer"></div>
+    <h1>Post-Its Interativos</h1>
+    <div class="container" id="postItContainer"></div>
 
-    <!-- Modal para editar post-it -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span onclick="closeEditModal()" class="close">&times;</span>
-            <h2>Editar Post-It</h2>
-            <input type="text" id="nameInput" placeholder="Nome">
-            <input type="text" id="classInput" placeholder="Classe">
-            <input type="text" id="shiftInput" placeholder="Turno">
-            <textarea id="textContent" placeholder="Conteúdo"></textarea>
-            <div>
-                <button onclick="savePostIt()">Salvar</button>
-                <button onclick="closeEditModal()">Cancelar</button>
-            </div>
+    <button class="new-post-it-btn" onclick="openEditModal()">Novo Post-It</button>
+
+    <div class="edit-modal" id="editModal">
+        <label for="nameInput">Nome:</label>
+        <input type="text" id="nameInput">
+
+        <label for="classInput">Turma:</label>
+        <input type="text" id="classInput">
+
+        <label for="shiftInput">Turno:</label>
+        <input type="text" id="shiftInput">
+
+        <label for="textContent">Conteúdo:</label>
+        <textarea id="textContent" rows="3"></textarea>
+
+        <div class="color-select">
+            <div class="color-option" style="background-color: yellow;" onclick="selectColor('yellow')"></div>
+            <div class="color-option" style="background-color: pink;" onclick="selectColor('pink')"></div>
+            <div class="color-option" style="background-color: lightblue;" onclick="selectColor('lightblue')"></div>
+            <div class="color-option" style="background-color: lightgreen;" onclick="selectColor('lightgreen')"></div>
         </div>
+
+        <button class="save-btn" onclick="savePostIt()">Salvar</button>
+    </div>
+
+    <div class="room-select">
+        <select class="room-list" id="roomSelect" onchange="changeRoom()"></select>
+        <button class="add-room-btn" onclick="addRoom()">Adicionar Sala</button>
     </div>
 
     <script src="script_aluno.js"></script>

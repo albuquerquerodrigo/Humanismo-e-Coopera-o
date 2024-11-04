@@ -78,10 +78,16 @@ async function savePostIt() {
     const content = document.getElementById('textContent').value;
 
     const postItData = {
-        name, class: className, shift, content, color: selectedColor, room: currentRoom
+        name,
+        class: className,
+        shift,
+        content,
+        color: selectedColor,
+        room: currentRoom
     };
 
     try {
+        // A lógica para edição permanece a mesma
         if (editingPostIt) {
             editingPostIt.dataset.name = name;
             editingPostIt.dataset.class = className;
@@ -93,7 +99,7 @@ async function savePostIt() {
             const response = await fetch('http://localhost:3001/api/postIts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(postItData),
+                body: JSON.stringify(postItData)
             });
 
             if (response.ok) {
@@ -134,6 +140,23 @@ function updateColorSelection() {
     document.querySelectorAll('.color-option').forEach(option => {
         option.classList.toggle('selected', option.style.backgroundColor === selectedColor);
     });
+}
+
+async function addRoom() {
+    const newRoom = prompt('Digite o nome da nova sala:');
+    if (!newRoom) return;
+
+    try {
+        await fetch('http://localhost:3001/api/rooms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ room: newRoom })
+        });
+        await loadRooms();
+        changeRoom(newRoom);
+    } catch (error) {
+        console.error('Erro ao adicionar sala:', error);
+    }
 }
 
 function changeRoom() {
