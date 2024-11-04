@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Versão de Aluno - Post-its Interativos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Post-its Interativos - Versão Aluno</h1>
+    
+    <div>
+        <label for="roomSelect">Escolha a sala:</label>
+        <select id="roomSelect" onchange="changeRoom()"></select>
+    </div>
+    
+    <div id="postItContainer"></div>
+
+    <!-- Modal para editar post-it -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeEditModal()" class="close">&times;</span>
+            <h2>Editar Post-It</h2>
+            <input type="text" id="nameInput" placeholder="Nome">
+            <input type="text" id="classInput" placeholder="Classe">
+            <input type="text" id="shiftInput" placeholder="Turno">
+            <textarea id="textContent" placeholder="Conteúdo"></textarea>
+            <div>
+                <button onclick="savePostIt()">Salvar</button>
+                <button onclick="closeEditModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script_aluno.js"></script>
+</body>
+</html>
